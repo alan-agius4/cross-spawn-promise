@@ -31,8 +31,7 @@ const closeArgsToError = (code, signal) => {
   return null
 }
 
-export default (cmd, args, options = {}) => new Promise((resolve, reject) => {
-  const proc = crossSpawn(cmd, args, options)
+const processSpawn = (proc) => new Promise((resolve, reject) => {
   let stdout = null
   let stderr = null
   const [ignoreStdout, ignoreStderr] = parseStdioOption(options.stdio)
@@ -63,4 +62,14 @@ export default (cmd, args, options = {}) => new Promise((resolve, reject) => {
     }
   })
   proc.once('error', reject)
+}
+
+export default (cmd, args, options = {}) {
+  const proc = crossSpawn(cmd, args, options)
+  return processSpawn(proc);
+})
+
+export sync = (cmd, args, options = {}) => {
+  const proc = crossSpawn.sync(cmd, args, options)
+  return processSpawn(proc, resolve, reject);
 })
